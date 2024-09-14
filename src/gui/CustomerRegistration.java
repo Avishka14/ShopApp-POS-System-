@@ -12,6 +12,12 @@ import model.MySQL;
  * @author Avishka
  */
 public class CustomerRegistration extends javax.swing.JFrame {
+    
+    private Invoice invoice;
+    
+    public void setInvoice(Invoice invoice){
+        this.invoice = invoice;
+    }
 
     public CustomerRegistration() {
         initComponents();
