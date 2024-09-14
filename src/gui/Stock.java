@@ -24,8 +24,13 @@ public class Stock extends javax.swing.JFrame {
     public void setGrn(GRN grn) {
         this.grn = grn;
     }
-     
     
+    private Invoice invoice;
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
     public Stock() {
         initComponents();
         loadBrand();
