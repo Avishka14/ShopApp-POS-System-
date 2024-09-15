@@ -4,6 +4,8 @@ package gui;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.util.HashMap;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
@@ -13,6 +15,10 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.InvoiceItem;
 import model.MySQL;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -142,40 +148,79 @@ public class Invoice extends javax.swing.JFrame {
     private double newPoints = 0;
     
     private void calculate(){
+       
+        //settings
+        if (jFormattedTextField3.getText().isEmpty()) {
+            discount = 0;
+        } else {
+            discount = Double.parseDouble(jFormattedTextField3.getText());
+        }
         
+        if (jFormattedTextField4.getText().isEmpty()) {
+            payment = 0;
+        } else {
+            payment = Double.parseDouble(jFormattedTextField3.getText());
+        }
+        
+        total = Double.parseDouble(jFormattedTextField5.getText());
+        
+        if (jCheckBox1.isSelected()) {
+            withdawPoints = true;
+        } else {
+            withdawPoints = false;
+        }
+        
+        paymentMethod = String.valueOf(jComboBox1.getSelectedItem());
+        //settings
+
         total -= discount;
         
-        if(total < 0){
-                    
-         }else {
-            
-            if(withdawPoints){
+        if (total < 0) {
+            //error
+        } else {
+            //discount ok
+            if (withdawPoints) {
                 
-               if (Double.parseDouble(jTextField4.getText()) == total) {
+                if (Double.parseDouble(jTextField4.getText()) == total) {
                     newPoints = 0;
                     total = 0;
-           
+                    //no payment required
+
                 } else if (Double.parseDouble(jTextField4.getText()) < total) {
                     newPoints = 0;
                     total -= Double.parseDouble(jTextField4.getText());
+                    //payment required
 
                 } else {
                     newPoints = Double.parseDouble(jTextField4.getText()) - total;
                     total = 0;
-                }               
+                    //no payment required
+                }
             }
-            
         }
         
-         if (paymentMethod.equals("Select")) {
-
-        } else if (paymentMethod.equals("Cash")) {
+        if (paymentMethod.equals("Cash")) {
             //cash
+            jFormattedTextField4.setEditable(true);
             balance = payment - total;
+            
+            if (balance < 0) {
+                jButton5.setEnabled(false);
+            } else {
+                jButton5.setEnabled(true);
+            }
+            
         } else {
             //card
+            payment = total;
+            balance = 0;
+            jFormattedTextField4.setText(String.valueOf(payment));
+            jFormattedTextField4.setEditable(false);
+            jButton5.setEnabled(true);
         }
-       
+        
+        jFormattedTextField5.setText(String.valueOf(balance));
+        
     }
     
    
@@ -230,6 +275,7 @@ public class Invoice extends javax.swing.JFrame {
         jCheckBox1 = new javax.swing.JCheckBox();
         jLabel25 = new javax.swing.JLabel();
         jFormattedTextField5 = new javax.swing.JFormattedTextField();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Invoice");
@@ -485,11 +531,21 @@ public class Invoice extends javax.swing.JFrame {
         jFormattedTextField3.setForeground(new java.awt.Color(255, 255, 255));
         jFormattedTextField3.setText("0");
         jFormattedTextField3.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
+        jFormattedTextField3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jFormattedTextField3KeyReleased(evt);
+            }
+        });
 
         jLabel22.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
         jLabel22.setText("Payement Method");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
 
         jLabel23.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
         jLabel23.setText("Payment");
@@ -497,9 +553,20 @@ public class Invoice extends javax.swing.JFrame {
         jFormattedTextField4.setForeground(new java.awt.Color(255, 255, 255));
         jFormattedTextField4.setText("0");
         jFormattedTextField4.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
+        jFormattedTextField4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jFormattedTextField4KeyReleased(evt);
+            }
+        });
 
         jLabel24.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
         jLabel24.setText("Withdraw Points");
+
+        jCheckBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCheckBox1ItemStateChanged(evt);
+            }
+        });
 
         jLabel25.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
         jLabel25.setText("Balance");
@@ -508,27 +575,37 @@ public class Invoice extends javax.swing.JFrame {
         jFormattedTextField5.setText("0");
         jFormattedTextField5.setFont(new java.awt.Font("Gotham", 0, 16)); // NOI18N
 
+        jButton5.setText("Print Invoice");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel25)
-                    .addComponent(jLabel24)
-                    .addComponent(jLabel23)
-                    .addComponent(jLabel22)
-                    .addComponent(jLabel21)
-                    .addComponent(jLabel20))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jFormattedTextField2)
-                    .addComponent(jFormattedTextField3)
-                    .addComponent(jComboBox1, 0, 179, Short.MAX_VALUE)
-                    .addComponent(jFormattedTextField4)
-                    .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jFormattedTextField5))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel25)
+                            .addComponent(jLabel24)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel20))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jFormattedTextField2)
+                            .addComponent(jFormattedTextField3)
+                            .addComponent(jComboBox1, 0, 179, Short.MAX_VALUE)
+                            .addComponent(jFormattedTextField4)
+                            .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jFormattedTextField5)))
+                    .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -558,7 +635,9 @@ public class Invoice extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel25)
                     .addComponent(jFormattedTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton5)
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -638,6 +717,92 @@ public class Invoice extends javax.swing.JFrame {
         loadInvoiceItem();    
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void jFormattedTextField3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextField3KeyReleased
+        calculate();
+    }//GEN-LAST:event_jFormattedTextField3KeyReleased
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        calculate();
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jFormattedTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jFormattedTextField4KeyReleased
+        calculate();
+    }//GEN-LAST:event_jFormattedTextField4KeyReleased
+
+    private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox1ItemStateChanged
+        calculate();
+    }//GEN-LAST:event_jCheckBox1ItemStateChanged
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        
+        try {
+            
+            String invoiceID = jTextField1.getText();
+            String customerMobile = jTextField2.getText();
+            String employeeEmail = jLabel13.getText();
+            String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            String paidAmount = jFormattedTextField4.getText();
+            String paymentMethodID = paymentMethodMap.get(jComboBox1.getSelectedItem());
+            String discount = String.valueOf(jFormattedTextField3.getText());
+    
+            //insert to invoice 
+            MySQL.executeIUD("INSERT INTO `invoice` VALUES('" + invoiceID + "','" + customerMobile + "','" + employeeEmail + "',"
+                    + "'" + dateTime + "','" + paidAmount + "','" + paymentMethodID + "','" + discount + "')");
+            //insert to invoice
+            
+            for(InvoiceItem invoiceItem : invoiceItemMap.values()){
+                 
+                  //insert to invoiceItem
+                MySQL.executeIUD("INSERT INTO `invoice_item`(`stock_id`,`qty`,`invoice_id` )"
+                        + "VALUES('" + invoiceItem.getStockID() + "','" + invoiceItem.getQty() + "','" + invoiceID + "')");
+                //insert to invoiceItem
+
+                //stock update
+                MySQL.executeIUD("UPDATE `stock` SET `qty`=`qty`-'" + invoiceItem.getQty() + "' WHERE `id`='" + invoiceItem.getStockID() + "'");
+                //stock update
+                                    
+            }
+            double points = Double.parseDouble(jFormattedTextField1.getText()) / 100;
+
+            //Withdraw Points
+            if (withdawPoints) {
+                newPoints += points;
+                MySQL.executeIUD("UPDATE `customer` SET `point` ='" + newPoints + "' WHERE `mobile` = '" + customerMobile + "'");
+            } else {
+                
+                MySQL.executeIUD("UPDATE `customer` SET `point`=`point`+'" + points + "' WHERE `mobile` = '" + customerMobile + "'");
+            }
+            //Withdraw Points
+            
+            //view or print report
+            
+            String path =  "src//reports//invoice.jasper";
+            
+            HashMap<String, Object> params = new HashMap<>();
+             params.put("Parameter1", jFormattedTextField2.getText());
+            params.put("Parameter2", jFormattedTextField3.getText());
+            params.put("Parameter3", String.valueOf(jComboBox1.getSelectedItem()));
+            params.put("Parameter4", jFormattedTextField4.getText());
+            params.put("Parameter5", jFormattedTextField2.getText());
+            
+            params.put("Parameter6", jTextField1.getText());
+            params.put("Parameter7", jTextField2.getText());
+            params.put("Parameter8", jLabel3.getText());
+            params.put("Parameter9", dateTime);
+              
+            JRTableModelDataSource datasource = new JRTableModelDataSource(jTable1.getModel());
+            
+            JasperPrint jasperPrint = JasperFillManager.fillReport(path, params, datasource);
+            
+            JasperViewer.viewReport(jasperPrint, false);
+            
+            
+        } catch (Exception e) {
+        e.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -657,6 +822,7 @@ public class Invoice extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JFormattedTextField jFormattedTextField1;
