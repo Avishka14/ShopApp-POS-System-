@@ -132,8 +132,7 @@ public class Signin extends javax.swing.JFrame {
       
         String email  = jTextField1.getText();
         String password = String.valueOf(jPasswordField1.getPassword());
-        
-      
+ 
         
         if(email.isEmpty()){
             
@@ -161,7 +160,9 @@ public class Signin extends javax.swing.JFrame {
                    Home home =  new Home(email,fname,lname);
                     home.setVisible(true);
                     this.dispose();
-                     
+                    
+                      setEmployeeEmail(email);
+                    
                  }else{
                      
                      JOptionPane.showMessageDialog(this, "Invalid Email or Password!", "Warning", JOptionPane.WARNING_MESSAGE);

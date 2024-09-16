@@ -584,7 +584,7 @@ public class GRN extends javax.swing.JFrame {
     private void jTextField5KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField5KeyReleased
         
         String total = jLabel18.getText();
-        String payment = jFormattedTextField1.getText();
+        String payment = jTextField5.getText();
 
         if (payment.isEmpty()) {
             payment = "0";
@@ -606,7 +606,7 @@ public class GRN extends javax.swing.JFrame {
             
             String grnNumber = jTextField1.getText();
             String supplierMobile = jTextField2.getText();
-            String employeeEmail = jLabel13.getText();
+            String employeeEmail = jLabel3.getText();
             String date = new SimpleDateFormat("yyy-MM-dd").format(new Date());
             String paidAmount =  jTextField5.getText();      
 
@@ -657,9 +657,7 @@ public class GRN extends javax.swing.JFrame {
                         + "VALUES('" + sid + "','" + grnItem.getQty() + "','" + grnItem.getBuyingPrice() + "','" + grnNumber + "')");
             }
 
-            
-            
-            
+                                 
         } catch (Exception e) {
         e.printStackTrace();
         }
