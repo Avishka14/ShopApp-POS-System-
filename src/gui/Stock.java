@@ -111,12 +111,12 @@ public class Stock extends javax.swing.JFrame {
              double min_price = 0;
             double max_price = 0;
 
-            if (!jTextField2.getText().isEmpty()) {
-                min_price = Double.parseDouble(jTextField2.getText());
+            if (!jTextField4.getText().isEmpty()) {
+                min_price = Double.parseDouble(jTextField4.getText());
             }
 
-            if (!jTextField1.getText().isEmpty()) {
-                max_price = Double.parseDouble(jTextField1.getText());
+            if (!jTextField5.getText().isEmpty()) {
+                max_price = Double.parseDouble(jTextField5.getText());
             }
 
             if (min_price > 0 && max_price == 0) {
