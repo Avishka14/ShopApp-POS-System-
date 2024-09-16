@@ -3,6 +3,7 @@ package gui;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.awt.Color;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.GRNItem;
+import model.MySQL;
 
 
 
@@ -428,6 +430,11 @@ public class GRN extends javax.swing.JFrame {
 
         jButton5.setFont(new java.awt.Font("Poppins", 1, 12)); // NOI18N
         jButton5.setText("Save GRN");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -592,6 +599,72 @@ public class GRN extends javax.swing.JFrame {
             jLabel20.setForeground(Color.WHITE);
         } 
     }//GEN-LAST:event_jTextField5KeyReleased
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        
+        try {
+            
+            String grnNumber = jTextField1.getText();
+            String supplierMobile = jTextField2.getText();
+            String employeeEmail = jLabel13.getText();
+            String date = new SimpleDateFormat("yyy-MM-dd").format(new Date());
+            String paidAmount =  jTextField5.getText();      
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          
+            MySQL.executeIUD("INSERT INTO `grn` VALUES('" + grnNumber + "','" + supplierMobile + "','" + date + "',"
+                    + "'" + employeeEmail + "','" + paidAmount + "')");
+            
+             for (GRNItem grnItem : grnItemMap.values()) {
+
+                ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `stock` WHERE "
+                        + "`product_id`= '" + grnItem.getProductId() + "' AND "
+                        + "`price`='" + grnItem.getSellingPrice() + "' AND"
+                        + "`mfd` = '" + sdf.format(grnItem.getMfd()) + "' AND "
+                        + "`exp` = '" + sdf.format(grnItem.getExp()) + "'");
+
+                String sid = "";
+
+                if (resultSet.next()) {
+                    //existing stock
+
+                    sid = resultSet.getString("id");
+
+                    String currentQty = resultSet.getString("qty");
+                    String updatedQuantity = String.valueOf(Double.parseDouble(currentQty) + grnItem.getQty());
+                    MySQL.executeIUD("UPDATE `stock` SET `qty` = '" + updatedQuantity + "' WHERE `id` = '" + sid + "'");
+
+                } else {
+
+                    // new stock
+                    MySQL.executeIUD("INSERT INTO `stock`(`product_id`,`qty`,`price`,`mfd`,`exp`) "
+                            + "VALUES('" + grnItem.getProductId() + "','" + grnItem.getQty() + "','" + grnItem.getSellingPrice() + "', "
+                            + "'" + sdf.format(grnItem.getMfd()) + "','" + sdf.format(grnItem.getExp()) + "')");
+
+                    ResultSet resultSet2 = MySQL.executeSearch("SELECT * FROM `stock` WHERE "
+                            + "`product_id`= '" + grnItem.getProductId() + "' AND "
+                            + "`price`='" + grnItem.getSellingPrice() + "' AND"
+                            + "`mfd` = '" + sdf.format(grnItem.getMfd()) + "' AND "
+                            + "`exp` = '" + sdf.format(grnItem.getExp()) + "'");
+
+                    if (resultSet2.next()) {
+                        sid = resultSet2.getString("id");
+                    }
+
+                }
+
+                MySQL.executeIUD("INSERT INTO `grn_item`(`stock_id`,`qty`,`price`,`grn_id`) "
+                        + "VALUES('" + sid + "','" + grnItem.getQty() + "','" + grnItem.getBuyingPrice() + "','" + grnNumber + "')");
+            }
+
+            
+            
+            
+        } catch (Exception e) {
+        e.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
