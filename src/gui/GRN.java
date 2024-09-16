@@ -2,6 +2,7 @@
 package gui;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -412,6 +413,11 @@ public class GRN extends javax.swing.JFrame {
         jLabel18.setText("0.00");
 
         jTextField5.setFont(new java.awt.Font("Poppins", 0, 16)); // NOI18N
+        jTextField5.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField5KeyReleased(evt);
+            }
+        });
 
         jLabel19.setFont(new java.awt.Font("Gotham", 1, 12)); // NOI18N
         jLabel19.setText("Balance");
@@ -567,6 +573,25 @@ public class GRN extends javax.swing.JFrame {
     private void jFormattedTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jFormattedTextField1ActionPerformed
+
+    private void jTextField5KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField5KeyReleased
+        
+        String total = jLabel18.getText();
+        String payment = jFormattedTextField1.getText();
+
+        if (payment.isEmpty()) {
+            payment = "0";
+        } else if (!payment.matches("^(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)$")) {
+
+            jLabel20.setText("INVALID");
+            jLabel20.setForeground(Color.RED);
+        } else {
+
+            double balance = Double.parseDouble(payment) - Double.parseDouble(total);
+            jLabel20.setText(String.valueOf(balance));
+            jLabel20.setForeground(Color.WHITE);
+        } 
+    }//GEN-LAST:event_jTextField5KeyReleased
 
     /**
      * @param args the command line arguments

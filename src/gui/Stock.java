@@ -93,6 +93,7 @@ public class Stock extends javax.swing.JFrame {
             String query = "SELECT * FROM `stock` INNER JOIN `product`"
                     + "ON `stock`.`product_id` = `product`.`id` "
                     + "INNER JOIN `brand` ON `brand`.`id` = `product`.`brand_id`";
+           
             
              int row = jTable1.getSelectedRow();
             
@@ -142,11 +143,12 @@ public class Stock extends javax.swing.JFrame {
                 query += "`stock`.`exp` < '" + format.format(end) + "' ";
             }
           
-
             String sort = String.valueOf(jComboBox2.getSelectedItem());
-
             query += "ORDER BY ";
+            query = query.replace("WHERE ORDER BY ", "ORDER BY ");
+            query = query.replace("AND ORDER BY ", "ORDER BY ");
 
+           
             if (sort.equals("Stock ID ASC")) {
                 query += "`stock`.`id` ASC";
             } else if (sort.equals("Stock ID DESC")) {
@@ -174,6 +176,7 @@ public class Stock extends javax.swing.JFrame {
             }
             
             ResultSet resultSet = MySQL.executeSearch(query);
+            
             DefaultTableModel model = (DefaultTableModel)jTable2.getModel();
             model.setRowCount(0);
             
@@ -399,6 +402,16 @@ public class Stock extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
+        jTable2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTable2KeyPressed(evt);
             }
         });
         jScrollPane2.setViewportView(jTable2);
@@ -642,6 +655,16 @@ public class Stock extends javax.swing.JFrame {
         jButton5.setEnabled(false);
  
          loadStock();
+         
+          if (evt.getClickCount() == 2) {
+            if (grn != null) {
+                grn.getjTextField3().setText(String.valueOf(jTable1.getValueAt(row, 0)));
+                grn.getjLabel9().setText(String.valueOf(jTable1.getValueAt(row, 2)));
+                grn.getjLabel11().setText(String.valueOf(jTable1.getValueAt(row, 3)));             
+                this.dispose();
+
+            }
+        }
         
         
     }//GEN-LAST:event_jTable1MouseClicked
@@ -683,6 +706,30 @@ public class Stock extends javax.swing.JFrame {
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
           loadStock();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jTable2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable2KeyPressed
+    
+    }//GEN-LAST:event_jTable2KeyPressed
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+        int row = jTable2.getSelectedRow();
+      
+        if(evt.getClickCount() == 2){
+            
+            if(invoice != null){
+                invoice.getjTextField3().setText(String.valueOf(jTable2.getValueAt(row, 0)));
+                invoice.getjLabel11().setText(String.valueOf(jTable2.getValueAt(row, 2)));
+                invoice.getjLabel14().setText(String.valueOf(jTable2.getValueAt(row, 3)));
+                invoice.getjTextField5().setText(String.valueOf(jTable2.getValueAt(row, 4)));
+                invoice.getjLabel14().setText(String.valueOf(jTable2.getValueAt(row, 6)));
+                invoice.getjLabel16().setText(String.valueOf(jTable2.getValueAt(row, 7)));
+                invoice.getjFormattedTextField1().grabFocus();
+                invoice.getjLabel8().setText(String.valueOf(jTable2.getValueAt(row, 5)));
+                this.dispose();
+            }
+            
+        }
+    }//GEN-LAST:event_jTable2MouseClicked
 
    
     public static void main(String args[]) {
