@@ -142,6 +142,7 @@ public class GRN extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("GRN");
 
         jLabel1.setFont(new java.awt.Font("Gotham", 0, 24)); // NOI18N
         jLabel1.setText("GRN");
@@ -507,6 +508,7 @@ public class GRN extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

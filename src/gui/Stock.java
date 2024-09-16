@@ -3,6 +3,8 @@ package gui;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
@@ -35,7 +37,7 @@ public class Stock extends javax.swing.JFrame {
         initComponents();
         loadBrand();
         loadProducts();
-        loadStock("");
+        loadStock();
     }
     
     private void loadBrand(){
@@ -84,7 +86,7 @@ public class Stock extends javax.swing.JFrame {
                
     }
     
-    private void loadStock(String pid){
+    private void loadStock(){
         
         try {
             
@@ -92,9 +94,54 @@ public class Stock extends javax.swing.JFrame {
                     + "ON `stock`.`product_id` = `product`.`id` "
                     + "INNER JOIN `brand` ON `brand`.`id` = `product`.`brand_id`";
             
-             if (!pid.isEmpty()) {
-                query += "WHERE `stock`.`product_id` = '" + pid + "'";
+             int row = jTable1.getSelectedRow();
+            
+             if(row != -1){
+                 String pid =  String.valueOf(jTable1.getValueAt(row,0));
+                 query += "WHERE `stock`.`product_id` = '" + pid + "' ";
+             }
+             
+                         if (query.contains("WHERE")) {
+                query += "AND ";
+            } else {
+                query += "WHERE ";
             }
+                         
+             double min_price = 0;
+            double max_price = 0;
+
+            if (!jTextField2.getText().isEmpty()) {
+                min_price = Double.parseDouble(jTextField2.getText());
+            }
+
+            if (!jTextField1.getText().isEmpty()) {
+                max_price = Double.parseDouble(jTextField1.getText());
+            }
+
+            if (min_price > 0 && max_price == 0) {
+                query += "`stock`.`price` > '" + min_price + "' ";
+            } else if (min_price == 0 && max_price > 0) {
+                query += "`stock`.`price` < '" + max_price + "' ";
+            } else if (min_price > 0 && max_price > 0) {
+                query += "`stock`.`price` > '" + min_price + "' AND `stock`.`price` <  '" + max_price + "'";
+            }
+            
+             //exp
+            Date start = null;
+            Date end = null;
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+            if (jDateChooser1.getDate() != null) {
+                start = jDateChooser1.getDate();
+                query += "`stock`.`exp` > '" + format.format(start) + "' AND";
+            }
+
+            if (jDateChooser2.getDate() != null) {
+                end = jDateChooser2.getDate();
+                query += "`stock`.`exp` < '" + format.format(end) + "' ";
+            }
+          
 
             String sort = String.valueOf(jComboBox2.getSelectedItem());
 
@@ -580,7 +627,7 @@ public class Stock extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        resetProductUI();
-        loadStock("");
+        loadStock();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
@@ -593,9 +640,8 @@ public class Stock extends javax.swing.JFrame {
         jComboBox1.setSelectedItem(String.valueOf(jTable1.getValueAt(row, 2)));
         jTextField2.setText(String.valueOf(jTable1.getValueAt(row, 3)));
         jButton5.setEnabled(false);
-
-        loadStock(String.valueOf(jTable1.getValueAt(row, 0)));
-
+ 
+         loadStock();
         
         
     }//GEN-LAST:event_jTable1MouseClicked
@@ -635,7 +681,7 @@ public class Stock extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
-          loadStock("");
+          loadStock();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
    

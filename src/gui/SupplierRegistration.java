@@ -3,6 +3,7 @@ package gui;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -474,23 +475,49 @@ public class SupplierRegistration extends javax.swing.JFrame {
         jLabel2.setText(String.valueOf(jTable1.getValueAt(row, 4)));
 
         jTextField1.setEnabled(false);
+        
+             if (evt.getClickCount() == 2) {
+
+            if (grn != null) {
+                grn.getjTextField2().setText(String.valueOf(jTable1.getValueAt(row, 0)));
+                grn.getjLabel21().setText(String.valueOf(jTable1.getValueAt(row, 1)));
+                this.dispose();
+            }
+        }
+        
 
         try {
 
             double total = 0;
-
+           
             ResultSet resultSet = MySQL.executeSearch("SELECT * FROM `grn` INNER JOIN `grn_item`"
                     + "ON `grn`.`id` = `grn_item`.`grn_id` WHERE `supplier_mobile` = '" + String.valueOf(jTable1.getValueAt(row, 0)) + "'");
-
+         
+            HashMap<Long, Double> grns = new HashMap<>();
+            
             while (resultSet.next()) {
                 double qty = resultSet.getDouble("grn_item.qty");
 
                 double buyingPrice = resultSet.getDouble("grn_item.price");
 
-                total = qty * buyingPrice;
+                double itemTotal = qty * buyingPrice;
                 
-                System.out.println(total);
+                 //total = total + itemTotal;
+                total += itemTotal;
+                grns.put(resultSet.getLong("grn.id"), resultSet.getDouble("grn.paid_amount"));
+                         
             }
+            
+             double totalPaid = 0;
+
+            for (Double paid : grns.values()) {
+
+                //totalPaid+=paid;
+                totalPaid = totalPaid + paid;
+            }
+
+            jLabel10.setText(String.valueOf(grns.size()));
+            jLabel11.setText(String.valueOf(total - totalPaid));
 
         } catch (Exception e) {
             e.printStackTrace();
