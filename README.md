@@ -1,72 +1,141 @@
-# POS System for Supermarket
+# 🧾 POS System for Supermarket
 
-Welcome to the **POS System for Supermarket** project! This Java-based application is designed to streamline point-of-sale operations in a retail environment, specifically tailored for supermarket use. Developed as part of a university Software Application Development module, this project showcases a robust and scalable solution for managing sales, inventory, and customer interactions in a supermarket setting.
+Welcome to the **POS System for Supermarket**!  
+This Java-based desktop application is designed to streamline point-of-sale (POS) operations in a retail environment—specifically tailored for supermarkets.
 
-## Use Case
+Developed as part of a **university Software Application Development module**, this project showcases a robust and scalable solution for managing sales, inventory, suppliers, and customer interactions.
 
-### Purchase Transactions and Data Storing
+---
 
-#### Actors
+## 🧩 Use Case: Purchase Transactions & Data Storage
 
-- **Customer**: The individual who purchases items.
-- **Supplier**: The person or entity supplying goods to the store.
-- **Cashier**: The person managing the POS system and facilitating transactions.
+### 👥 Actors
+- **Customer** – Buys items from the supermarket.
+- **Supplier** – Provides goods to the store.
+- **Cashier** – Operates the POS system and facilitates transactions.
 
-#### Description
+### ✅ Preconditions
+- POS system is powered on.
+- Cashier is logged in.
 
-This use case outlines the process of a customer purchasing items at the supermarket, including applying discounts, processing payments, and printing a receipt. Additionally, it covers the process of adding stock information and updating the Goods Received Note (GRN) in the system.
+### 🔁 Workflow
 
-#### Preconditions
+#### 1. 🛒 Item Purchasing
+- Cashier selects the customer from the customer list or inputs their mobile number.
+- Products are added to the invoice table.
+- Quantity and discounts are applied.
+- Cashier clicks the **Print Invoice** button to generate a receipt.
 
-- The POS system is powered on and operational.
-- The cashier is logged into the system.
+#### 2. 📦 Goods Received Note (GRN)
+- Cashier selects a supplier from Supplier Registration.
+- Adds stock information and other relevant details.
+- Clicks the **GRN** button to store the information in the database.
 
-#### Basic Flow
+---
 
-**1. Item Purchasing**
+## 📦 Classes Overview
 
-- **Item Adding to the Invoice**:
-  1. The cashier selects the customer from the Customer Registration or enters the customer's mobile number.
-  2. The cashier adds products to the invoice table.
-  3. Additional data including quantity and discounts are added.
-  4. The cashier triggers the print invoice button to generate a receipt for the customer.
+- **`Signin`**: Entry point; handles user login via email and password.
+- **`CompanyRegistration`**: Manages CRUD operations for company details.
+- **`CustomerRegistration`**: Handles customer data (insert, update, delete, sort).
+- **`EmployeeRegistration`**: Manages employee info; includes child class `AddressView`.
+- **`AddressView`**: Adds employee addresses; child of `EmployeeRegistration`.
+- **`GRN`**: Tracks and stores received stock records.
+- **`Home`**: Main user interface after login; navigates to GRN or Invoice.
+- **`Invoice`**: Manages customer invoice creation and printing.
+- **`Stock`**: Monitors and maintains current stock levels.
+- **`SupplierRegistration`**: Manages supplier data.
 
-- **Item Adding to the GRN**:
-  1. The cashier selects the supplier from Supplier Registration.
-  2. Stock information and other relevant details are added.
-  3. The GRN button is triggered to store the information in the database.
+---
 
-## Classes Used
+## 🛠️ Technology Stack
 
-- **SignIn**: Contains the main method and serves as the entry point. Handles user email and password input.
-
-- **CompanyRegistration**: Manages the storage of company information, including CRUD operations and data loading from the MySQL database.
-
-- **CustomerRegistration**: Responsible for managing customer data in the database. Provides functionality to insert, update, delete, and sort customer records. Displays data from the MySQL database.
-
-- **EmployeeRegistration**: Stores employee information in the database. Contains a child class, `AddressView`, for managing employee addresses.
-
-- **AddressView**: A child class of `EmployeeRegistration` used to add addresses for employees.
-
-- **GRN**: Manages the storage of Goods Received Notes (GRN), tracking records of received stock.
-
-- **Home**: Manages the GUI transition between the GRN and Invoice interfaces. The main class users see after logging in.
-
-- **Invoice**: Handles the printing of invoices for customers.
-
-- **Stock**: Maintains a record of stock levels in the database.
-
-- **SupplierRegistration**: Manages supplier information in the database.
-
-## Technology Stack
-
-- **Programming Language**: Java
-- **Database**: MySQL
-- **Libraries/Frameworks**: 
-  - MySqlConnectorJ
+- **Language**: Java  
+- **Database**: MySQL  
+- **Libraries/Frameworks**:
+  - MySQL Connector/J
   - FlatLaf
-  - OpenPdf
-  - PDFBox
+  - OpenPDF
+  - Apache PDFBox
   - JasperReports
   - Stax2
-- **Development Environment**: NetBeans 20, MySQL Workbench
+- **IDE**: NetBeans 20  
+- **DB Tool**: MySQL Workbench
+
+---
+
+## 📁 Project Structure
+
+```
+├── build.xml
+├── manifest.mf
+├── README.md
+├── nbproject/
+├── src/
+│   ├── gui/
+│   │   ├── AddressView.form
+│   │   ├── AddressView.java
+│   │   ├── CompanyRegistration.form
+│   │   ├── CompanyRegistration.java
+│   │   ├── CustomerRegistration.form
+│   │   ├── CustomerRegistration.java
+│   │   ├── EmployeeRegistration.form
+│   │   ├── EmployeeRegistration.java
+│   │   ├── GRN.form
+│   │   ├── GRN.java
+│   │   ├── Home.form
+│   │   ├── Home.java
+│   │   ├── Invoice.form
+│   │   ├── Invoice.java
+│   │   ├── Signin.form
+│   │   ├── Signin.java
+│   │   ├── Stock.form
+│   │   └── Stock.java
+│   ├── model/
+│   │   └── ... (Model classes here)
+│   └── reports/
+│       └── ... (Jasper report files here)
+```
+
+---
+
+## 🚀 How to Build & Run
+
+### 1. 📥 Clone the Repository
+
+```
+git clone https://github.com/yourusername/supermarket-pos.git
+```
+
+### 2. 🧑‍💻 Open in NetBeans
+
+- Launch **NetBeans 20**
+- Open the project folder
+
+### 3. 🛢️ Configure MySQL
+
+- Make sure MySQL is running.
+- Import or create the required database schema.
+- Update DB credentials if needed.
+
+### 4. 🔨 Build the Project
+
+Using NetBeans or Ant:
+
+```
+ant build
+```
+
+### 5. ▶️ Run the Application
+
+Run the main class:
+
+```
+Signin.java
+```
+
+---
+
+## © License
+
+&copy; Avishka14 — For academic and educational purposes only.
